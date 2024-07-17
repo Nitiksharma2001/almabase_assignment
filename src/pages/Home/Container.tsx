@@ -42,7 +42,6 @@ export default function Container() {
 
   const onModifyCord = (id: string, x: number, y: number) => {
     const localData = labelItems.map((item) => {
-      console.log(x, y)
       if (item.id == id) return {
         ...item, x, y
       }

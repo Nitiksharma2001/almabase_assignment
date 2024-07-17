@@ -17,45 +17,36 @@ export default function LabelItem({
   let startX = 0
   let startY = 0
 
-  const labelRef = useRef<HTMLDivElement>(null)
-  const isSelected = useRef<boolean>(false)
-
   function mouseDown(e: MouseEvent) {
     startX = e.clientX
     startY = e.clientY
 
-    isSelected.current = true
+    document.addEventListener('mousemove', mouseMove)
+    document.addEventListener('mouseup', mouseUp)
   }
 
-  function mouseMove(e: MouseEvent) {
-    const box = labelRef.current
-
-    if (!isSelected.current) return
-    if (!box) return
-
+  function mouseMove(e: globalThis.MouseEvent) {
     newX = startX - e.clientX
     newY = startY - e.clientY
 
     startX = e.clientX
     startY = e.clientY
 
-    box.style.top = box.offsetTop - newY + 'px'
-    box.style.left = box.offsetLeft - newX + 'px'
+    const card = document.getElementById(labelItem.id) as HTMLDivElement
+    card.style.top = card.offsetTop - newY + 'px'
+    card.style.left = card.offsetLeft - newX + 'px'
   }
 
   function mouseUp() {
-    const box = labelRef.current
-    if (!box) return
-    isSelected.current = false
-    onModifyCord(labelItem.id, box.offsetLeft - newX, box.offsetTop - newY)
+    const card = document.getElementById(labelItem.id) as HTMLDivElement
+    onModifyCord(labelItem.id, card.offsetLeft - newX, card.offsetTop - newY)
+    document.removeEventListener('mousemove', mouseMove)
   }
 
   useEffect(() => {
-    const box = labelRef.current
-    if (!box) return
-
-    box.style.top =  newY + 'px'
-    box.style.left =  newX + 'px'
+    const card = document.getElementById(labelItem.id) as HTMLDivElement
+    card.style.top = newY + 'px'
+    card.style.left = newX + 'px'
   }, [])
   return (
     <div
@@ -64,9 +55,6 @@ export default function LabelItem({
         onChangeDialog(labelItem.id)
       }}
       onMouseDown={mouseDown}
-      onMouseMove={mouseMove}
-      onMouseUp={mouseUp}
-      ref={labelRef}
       className='div_label'
     >
       <MdOutlineDragIndicator />
