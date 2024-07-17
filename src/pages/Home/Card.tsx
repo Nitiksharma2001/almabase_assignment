@@ -3,7 +3,13 @@ import './index.css'
 import { MdOutlineDragIndicator } from 'react-icons/md'
 import { LabelType } from './Container'
 
-export default function LabelItem({ labelItem }: { labelItem: LabelType }) {
+export default function LabelItem({
+  labelItem,
+  onChangeDialog,
+}: {
+  labelItem: LabelType
+  onChangeDialog: (id: string) => void
+}) {
   let newX = 0
   let newY = 0
   let startX = 0
@@ -21,10 +27,10 @@ export default function LabelItem({ labelItem }: { labelItem: LabelType }) {
 
   function mouseMove(e: MouseEvent) {
     const box = labelRef.current
-    
+
     if (!isSelected.current) return
-    if(!box) return
-    
+    if (!box) return
+
     newX = startX - e.clientX
     newY = startY - e.clientY
 
@@ -41,7 +47,9 @@ export default function LabelItem({ labelItem }: { labelItem: LabelType }) {
   return (
     <div
       id={labelItem.id}
-      onDoubleClick={() => (document.getElementById('open_card') as HTMLDialogElement).showModal()}
+      onDoubleClick={() => {
+        onChangeDialog(labelItem.id)
+      }}
       onMouseDown={mouseDown}
       onMouseMove={mouseMove}
       onMouseUp={mouseUp}

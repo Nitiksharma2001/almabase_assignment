@@ -32,22 +32,32 @@ export default function Container() {
       y: 0,
     },
   ])
-  const dialogRef = useRef<LabelType>({
-    id: '',
-    label: '',
-    x: 0,
-    y: 0,
-  })
 
-  
+  const [showDialogBox, setShowDialogyBox] = useState(false)
+  const [dialogData, setDialogData] = useState<LabelType | undefined>(undefined)
+
+  const onChangeDialog = (id: string) => {
+    setShowDialogyBox(true)
+    setDialogData(labelItems.find((item) => item.id === id))
+  }
+  const onSave = (data: LabelType) => {
+    setLabelItems((labelItems) =>
+      labelItems.map((item) => {
+        if (item.id == data.id) return data
+        return item
+      })
+    )
+    setShowDialogyBox(false)
+    setDialogData(undefined)
+  }
   return (
-    <>
-      <ModifyElemDialog  />
+    <div>
+      <ModifyElemDialog isOpen={showDialogBox} data={dialogData} onSave={onSave} />
       <div id='container'>
         {labelItems.map((item) => (
-          <LabelItem key={item.id} labelItem={item} />
+          <LabelItem key={item.id} labelItem={item} onChangeDialog={onChangeDialog}/>
         ))}
       </div>
-    </>
+    </div>
   )
 }
