@@ -1,4 +1,4 @@
-import { MouseEvent, useRef } from 'react'
+import { MouseEvent, useEffect, useRef } from 'react'
 import './index.css'
 import { MdOutlineDragIndicator } from 'react-icons/md'
 import { LabelType } from './Container'
@@ -6,12 +6,14 @@ import { LabelType } from './Container'
 export default function LabelItem({
   labelItem,
   onChangeDialog,
+  onModifyCord,
 }: {
   labelItem: LabelType
   onChangeDialog: (id: string) => void
+  onModifyCord: (id: string, x: number, y: number) => void
 }) {
-  let newX = 0
-  let newY = 0
+  let newX = labelItem.x
+  let newY = labelItem.y
   let startX = 0
   let startY = 0
 
@@ -42,8 +44,19 @@ export default function LabelItem({
   }
 
   function mouseUp() {
+    const box = labelRef.current
+    if (!box) return
     isSelected.current = false
+    onModifyCord(labelItem.id, box.offsetLeft - newX, box.offsetTop - newY)
   }
+
+  useEffect(() => {
+    const box = labelRef.current
+    if (!box) return
+
+    box.style.top =  newY + 'px'
+    box.style.left =  newX + 'px'
+  }, [])
   return (
     <div
       id={labelItem.id}

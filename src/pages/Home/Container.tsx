@@ -1,6 +1,6 @@
 import './index.css'
 import LabelItem from './Card'
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import ModifyElemDialog from './Diaglog'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -33,6 +33,14 @@ export default function Container() {
     },
   ])
 
+  useEffect(() => {
+    const labels = localStorage.getItem('labelItems')
+    if(labels){
+      setLabelItems(JSON.parse(labels) as LabelType[])
+    }
+
+  }, [])
+
   const [showDialogBox, setShowDialogyBox] = useState(false)
   const [dialogData, setDialogData] = useState<LabelType | undefined>(undefined)
 
@@ -50,12 +58,23 @@ export default function Container() {
     setShowDialogyBox(false)
     setDialogData(undefined)
   }
+
+  const onModifyCord = (id: string, x: number, y: number) => {
+    const localData = labelItems.map((item) => {
+      if (item.id == id) return {
+        ...item, x, y
+      }
+      return item
+    })
+    localStorage.setItem('labelItems', JSON.stringify(localData))
+    setLabelItems(localData)
+  }
   return (
     <div>
       <ModifyElemDialog isOpen={showDialogBox} data={dialogData} onSave={onSave} />
       <div id='container'>
         {labelItems.map((item) => (
-          <LabelItem key={item.id} labelItem={item} onChangeDialog={onChangeDialog}/>
+          <LabelItem key={item.id} labelItem={item} onChangeDialog={onChangeDialog} onModifyCord={onModifyCord}/>
         ))}
       </div>
     </div>
