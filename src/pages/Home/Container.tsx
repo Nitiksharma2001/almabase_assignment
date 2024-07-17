@@ -12,26 +12,7 @@ export interface LabelType {
 }
 
 export default function Container() {
-  const [labelItems, setLabelItems] = useState([
-    {
-      id: uuidv4(),
-      label: 'label 1',
-      x: 0,
-      y: 0,
-    },
-    {
-      id: uuidv4(),
-      label: 'label 2',
-      x: 0,
-      y: 0,
-    },
-    {
-      id: uuidv4(),
-      label: 'label 3',
-      x: 0,
-      y: 0,
-    },
-  ])
+  const [labelItems, setLabelItems] = useState<LabelType[]>([])
 
   useEffect(() => {
     const labels = localStorage.getItem('labelItems')
