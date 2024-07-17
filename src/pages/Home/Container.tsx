@@ -49,18 +49,19 @@ export default function Container() {
     setDialogData(labelItems.find((item) => item.id === id))
   }
   const onSave = (data: LabelType) => {
-    setLabelItems((labelItems) =>
-      labelItems.map((item) => {
-        if (item.id == data.id) return data
-        return item
-      })
-    )
+    const localData = labelItems.map((item) => {
+      if (item.id == data.id) return data
+      return item
+    })
+    setLabelItems(localData)
+    localStorage.setItem('labelItems', JSON.stringify(localData))
     setShowDialogyBox(false)
     setDialogData(undefined)
   }
 
   const onModifyCord = (id: string, x: number, y: number) => {
     const localData = labelItems.map((item) => {
+      console.log(x, y)
       if (item.id == id) return {
         ...item, x, y
       }
@@ -69,14 +70,27 @@ export default function Container() {
     localStorage.setItem('labelItems', JSON.stringify(localData))
     setLabelItems(localData)
   }
+
+  const onDropItem = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const data = e.dataTransfer.getData('text/plain');
+    const newItem = [...labelItems, {
+      id: uuidv4(),
+      label: data, 
+      x: e.clientX,
+      y: e.clientY
+    }]
+    localStorage.setItem('labelItems', JSON.stringify(newItem))
+    setLabelItems(newItem)
+  }
   return (
-    <div>
+    <>
       <ModifyElemDialog isOpen={showDialogBox} data={dialogData} onSave={onSave} />
-      <div id='container'>
+      <div id='container' className='h-full w-full visible' onDrop={onDropItem} onDragOver={e => e.preventDefault()}>
         {labelItems.map((item) => (
           <LabelItem key={item.id} labelItem={item} onChangeDialog={onChangeDialog} onModifyCord={onModifyCord}/>
         ))}
       </div>
-    </div>
+    </>
   )
 }

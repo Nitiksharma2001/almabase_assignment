@@ -3,8 +3,8 @@ import Sidebar from './Sidebar'
 
 export default function Main() {
   return (
-    <main>
-      {/* <Sidebar /> */}
+    <main className='h-full'>
+      <Sidebar />
       <Container />
     </main>
   )
