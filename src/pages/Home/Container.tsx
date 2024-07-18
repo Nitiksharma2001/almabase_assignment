@@ -13,13 +13,11 @@ export interface LabelType {
 
 export default function Container() {
   const [labelItems, setLabelItems] = useState<LabelType[]>([])
-
   useEffect(() => {
     const labels = localStorage.getItem('labelItems')
     if(labels){
       setLabelItems(JSON.parse(labels) as LabelType[])
     }
-
   }, [])
 
   const [showDialogBox, setShowDialogyBox] = useState(false)
@@ -42,10 +40,12 @@ export default function Container() {
 
   const onModifyCord = (id: string, x: number, y: number) => {
     const localData = labelItems.map((item) => {
-      if (item.id == id) return {
-        ...item, x, y
+      const elem = document.getElementById(item.id)
+      return {
+        ...item,
+        x: Number(elem?.style.left.substring(0, elem?.style.left.length - 2)),
+        y: Number(elem?.style.top.substring(0, elem?.style.top.length - 2))
       }
-      return item
     })
     localStorage.setItem('labelItems', JSON.stringify(localData))
     setLabelItems(localData)
@@ -66,7 +66,7 @@ export default function Container() {
   return (
     <>
       <ModifyElemDialog isOpen={showDialogBox} data={dialogData} onSave={onSave} />
-      <div id='container' className='h-full w-full visible' onDrop={onDropItem} onDragOver={e => e.preventDefault()}>
+      <div id='container' onDrop={onDropItem} onDragOver={e => e.preventDefault()}>
         {labelItems.map((item) => (
           <LabelItem key={item.id} labelItem={item} onChangeDialog={onChangeDialog} onModifyCord={onModifyCord}/>
         ))}

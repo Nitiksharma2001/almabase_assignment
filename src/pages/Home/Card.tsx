@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import './index.css'
 import { MdOutlineDragIndicator } from 'react-icons/md'
 import { LabelType } from './Container'
@@ -17,48 +17,51 @@ export default function LabelItem({
   let startX = 0
   let startY = 0
 
-  function mouseDown(e: MouseEvent) {
-    startX = e.clientX
-    startY = e.clientY
-
-    document.addEventListener('mousemove', mouseMove)
-    document.addEventListener('mouseup', mouseUp)
-  }
-
-  function mouseMove(e: globalThis.MouseEvent) {
-    newX = startX - e.clientX
-    newY = startY - e.clientY
-
-    startX = e.clientX
-    startY = e.clientY
-
-    const card = document.getElementById(labelItem.id) as HTMLDivElement
-    card.style.top = card.offsetTop - newY + 'px'
-    card.style.left = card.offsetLeft - newX + 'px'
-  }
-
-  function mouseUp() {
-    const card = document.getElementById(labelItem.id) as HTMLDivElement
-    onModifyCord(labelItem.id, card.offsetLeft - newX, card.offsetTop - newY)
-    document.removeEventListener('mousemove', mouseMove)
-  }
-
   useEffect(() => {
     const card = document.getElementById(labelItem.id) as HTMLDivElement
-    card.style.top = newY + 'px'
-    card.style.left = newX + 'px'
-  }, [])
+
+    card.addEventListener('mousedown', mouseDown)
+
+    function mouseDown(e: globalThis.MouseEvent) {
+      startX = e.clientX
+      startY = e.clientY
+  
+      document.addEventListener('mousemove', mouseMove)
+      document.addEventListener('mouseup', mouseUp)
+    }
+  
+    function mouseMove(e: globalThis.MouseEvent) {
+      newX = startX - e.clientX
+      newY = startY - e.clientY
+  
+      startX = e.clientX
+      startY = e.clientY
+  
+      card.style.top = card.offsetTop - newY + 'px'
+      card.style.left = card.offsetLeft - newX + 'px'
+    }
+    
+    function mouseUp() {
+      // onModifyCord(labelItem.id, card.offsetLeft - newX, card.offsetTop - newY)
+      document.removeEventListener('mousemove', mouseMove)
+      document.removeEventListener('mouseup', mouseUp)
+    }
+  }, [])  
+
   return (
     <div
       id={labelItem.id}
       onDoubleClick={() => {
         onChangeDialog(labelItem.id)
       }}
-      onMouseDown={mouseDown}
       className='div_label'
+      style={{
+        top: newY + 'px',
+        left: newX + 'px'
+      }}
     >
       <MdOutlineDragIndicator />
-      <p>{labelItem.label}</p>
+      <p style={{userSelect: 'none'}}>{labelItem.label}</p>
     </div>
   )
 }
