@@ -1,16 +1,16 @@
 import { useEffect } from 'react'
 import './index.css'
 import { MdOutlineDragIndicator } from 'react-icons/md'
-import { LabelType } from './Container'
+import { CardType } from './Container'
 
 export default function LabelItem({
   labelItem,
   onChangeDialog,
   onModifyCord,
 }: {
-  labelItem: LabelType
+  labelItem: CardType
   onChangeDialog: (id: string) => void
-  onModifyCord: (id: string, x: number, y: number) => void
+  onModifyCord: () => void
 }) {
   let newX = labelItem.x
   let newY = labelItem.y
@@ -42,7 +42,7 @@ export default function LabelItem({
     }
     
     function mouseUp() {
-      // onModifyCord(labelItem.id, card.offsetLeft - newX, card.offsetTop - newY)
+      onModifyCord()
       document.removeEventListener('mousemove', mouseMove)
       document.removeEventListener('mouseup', mouseUp)
     }
@@ -54,14 +54,14 @@ export default function LabelItem({
       onDoubleClick={() => {
         onChangeDialog(labelItem.id)
       }}
-      className='div_label'
+      className='draggable-card'
       style={{
         top: newY + 'px',
         left: newX + 'px'
       }}
     >
       <MdOutlineDragIndicator />
-      <p style={{userSelect: 'none'}}>{labelItem.label}</p>
+      <p style={{userSelect: 'none'}}>{labelItem.text}</p>
     </div>
   )
 }

@@ -4,71 +4,71 @@ import { useEffect, useState } from 'react'
 import ModifyElemDialog from './Diaglog'
 import { v4 as uuidv4 } from 'uuid'
 
-export interface LabelType {
+export interface CardType {
   id: string
-  label: string
+  text: string
   x: number
   y: number
 }
 
 export default function Container() {
-  const [labelItems, setLabelItems] = useState<LabelType[]>([])
+  const [cards, SetCards] = useState<CardType[]>([])
+  const [showDialogBox, setShowDialogyBox] = useState(false)
+  const [dialogId, setDialogId] = useState('')
+
   useEffect(() => {
     const labels = localStorage.getItem('labelItems')
-    if(labels){
-      setLabelItems(JSON.parse(labels) as LabelType[])
+    if (labels) {
+      SetCards(JSON.parse(labels) as CardType[])
     }
   }, [])
 
-  const [showDialogBox, setShowDialogyBox] = useState(false)
-  const [dialogData, setDialogData] = useState<LabelType | undefined>(undefined)
-
   const onChangeDialog = (id: string) => {
     setShowDialogyBox(true)
-    setDialogData(labelItems.find((item) => item.id === id))
+    setDialogId(id)
   }
-  const onSave = (data: LabelType) => {
-    const localData = labelItems.map((item) => {
+
+  const onSave = (data: CardType) => {
+    const localData = cards.map((item) => {
       if (item.id == data.id) return data
       return item
     })
-    setLabelItems(localData)
+    SetCards(localData)
     localStorage.setItem('labelItems', JSON.stringify(localData))
     setShowDialogyBox(false)
-    setDialogData(undefined)
+    setDialogId('')
   }
 
-  const onModifyCord = (id: string, x: number, y: number) => {
-    const localData = labelItems.map((item) => {
-      const elem = document.getElementById(item.id)
-      return {
-        ...item,
-        x: Number(elem?.style.left.substring(0, elem?.style.left.length - 2)),
-        y: Number(elem?.style.top.substring(0, elem?.style.top.length - 2))
-      }
+  const onModifyCord = () => {
+    const allCards = document.querySelectorAll('.draggable-card') as NodeListOf<HTMLDivElement>
+    const modifiedCards = Array.from(allCards).map((card) => {
+      const x = card.offsetLeft
+      const y = card.offsetTop
+      return { x, y, text: card.innerText, id: card.id }
     })
-    localStorage.setItem('labelItems', JSON.stringify(localData))
-    setLabelItems(localData)
+    localStorage.setItem('labelItems', JSON.stringify(modifiedCards))
+    SetCards(modifiedCards)
   }
 
   const onDropItem = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const data = e.dataTransfer.getData('text/plain');
-    const newItem = [...labelItems, {
+    const newItem = [...cards, {
       id: uuidv4(),
-      label: data, 
+      text: data,
       x: e.clientX,
       y: e.clientY
     }]
     localStorage.setItem('labelItems', JSON.stringify(newItem))
-    setLabelItems(newItem)
+    SetCards(newItem)
   }
+
   return (
     <>
-      <ModifyElemDialog isOpen={showDialogBox} data={dialogData} onSave={onSave} />
+      <ModifyElemDialog isOpen={showDialogBox} id={dialogId} onSave={onSave} />
       <div id='container' onDrop={onDropItem} onDragOver={e => e.preventDefault()}>
-        {labelItems.map((item) => (
-          <LabelItem key={item.id} labelItem={item} onChangeDialog={onChangeDialog} onModifyCord={onModifyCord}/>
+        {cards.map((item) => (
+          <LabelItem key={item.id} labelItem={item} onChangeDialog={onChangeDialog} onModifyCord={onModifyCord} />
         ))}
       </div>
     </>

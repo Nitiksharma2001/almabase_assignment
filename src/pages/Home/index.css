@@ -5,7 +5,7 @@
   background-size: 4em 4em;
   height: 100vh;
 }
-.div_label {
+.draggable-card {
   cursor: move;
   position: fixed;
   min-width: 100px;
@@ -18,6 +18,6 @@
   display: flex;
   align-items: center;
 }
-.div_label:active {
+.draggable-card:active {
   border: 1px solid red;
 }
